@@ -26,3 +26,11 @@ export interface Expense {
     tagId: number | null,
     tagName: string
 }
+
+export interface Income {
+    id: number,
+    name: string,
+    amount: number,
+    createdBy: string,
+    date: string
+}

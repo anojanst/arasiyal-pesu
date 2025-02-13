@@ -23,3 +23,11 @@ export const Expenses = pgTable("expenses", {
     tagId: integer("tagId").references(() => Tags.id),
     date: date("date").notNull(),
 })
+
+export const Incomes = pgTable("incomes", {
+    id: serial("id").primaryKey(),
+    name: varchar("name").notNull(),
+    amount: integer("amount").notNull(),
+    createdBy: varchar("createdBy").notNull(),
+    date: date("date").notNull(),
+});

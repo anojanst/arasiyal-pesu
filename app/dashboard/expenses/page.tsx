@@ -1,11 +1,10 @@
 'use client'
 import { Budgets, Expenses, Tags } from '@/utils/schema'
 import { useEffect, useState } from 'react'
-import { eq, sql, and, desc, asc } from 'drizzle-orm'
+import { eq, and, asc } from 'drizzle-orm'
 import { db } from '@/utils/dbConfig'
 import { useUser } from '@clerk/nextjs'
-import { useParams } from 'next/navigation'
-import { Budget, Expense } from '../_type/type'
+import { Expense } from '../_type/type'
 import ExpenseItem from './[id]/_components/ExpenseItem'
 import { Skeleton } from '@/components/ui/skeleton'
 

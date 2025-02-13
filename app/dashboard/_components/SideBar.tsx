@@ -1,6 +1,6 @@
 'use client'
 import { UserButton } from '@clerk/nextjs'
-import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck } from 'lucide-react'
+import { LayoutGrid, PiggyBank, ReceiptText, ShieldCheck, Wallet } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -28,6 +28,13 @@ function SideBar() {
         },
         {
             id: 4,
+            name: 'Incomes',
+            icon: Wallet,
+            path: '/dashboard/incomes',
+        },
+
+        {
+            id: 5,
             name: 'Upgrade',
             icon: ShieldCheck,
             path: '/dashboard/upgrade',
