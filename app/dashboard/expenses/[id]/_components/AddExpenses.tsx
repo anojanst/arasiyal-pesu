@@ -7,7 +7,6 @@ import { useUser } from '@clerk/nextjs';
 import { toast } from 'sonner';
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import { PopoverContent } from '@radix-ui/react-popover';
-import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { format } from "date-fns"
 
@@ -20,17 +19,16 @@ function AddExpenses(props: { refreshData: () => void, tags: Tag[] }) {
     const { refreshData, tags } = props
     const { user } = useUser()
     const [name, setName] = useState('')
-    const [date, setDate] = useState<Date | undefined>(new Date())
+    const [date, setDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
     const [amount, setAmount] = useState(0)
     const [tagId, setTagId] = useState<number | null>(null)
 
     const saveExpense = async () => {
-        const formattedDate = format(date!, 'yyyy-MM-dd');
         const result = await db.insert(Expenses).values({
             name: name,
             amount: amount,
             createdBy: user?.primaryEmailAddress?.emailAddress!,
-            date: formattedDate,
+            date: date,
             tagId: tagId
 
         }).returning({ insertedId: Expenses.id })
@@ -40,7 +38,7 @@ function AddExpenses(props: { refreshData: () => void, tags: Tag[] }) {
             toast(`Expense has been created. Budget Id is: ${result[0].insertedId!} `)
             setAmount(0)
             setName('')
-            setDate(new Date())
+            setDate(format(new Date(), 'yyyy-MM-dd'))
             setTagId(null)
         }
     }
@@ -62,28 +60,8 @@ function AddExpenses(props: { refreshData: () => void, tags: Tag[] }) {
                         <Input placeholder='Amount - Eg: 100' value={amount!} type='number' className='h-8' min={0} onChange={(e) => setAmount(parseInt(e.target.value))} />
                     </div>
                     <div className=' col-span-1'>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                        "w-full h-8 justify-start text-left font-normal",
-                                        !date && "text-muted-foreground"
-                                    )}
-                                >
-                                    <CalendarIcon />
-                                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 bg-white border border-slate-200 rounded-lg mt-2 z-20" align="start">
-                                <Calendar
-                                    mode="single"
-                                    selected={date}
-                                    onSelect={setDate}
-                                    initialFocus
-                                />
-                            </PopoverContent>
-                        </Popover>
+                    <Input placeholder='date' value={date!} type='date' className='h-8' min={0} onChange={(e) => setDate(e.target.value)} />
+                        
                     </div>
                     <div className=' col-span-1'>
                         <Select onValueChange={(value) => setTagId(parseInt(value))} value={tagId? tagId.toString() : ""}>
