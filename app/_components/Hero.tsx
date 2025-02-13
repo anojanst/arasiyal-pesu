@@ -18,21 +18,16 @@ function Hero() {
                     <div className="mt-8 flex flex-wrap justify-center gap-4">
                         <a
                             className="block w-full rounded-sm bg-primary px-12 py-3 text-sm font-medium text-white shadow-sm hover:bg-white hover:text-primary font-semibold border-2 border-primary focus:ring-3 focus:outline-hidden sm:w-auto"
-                            href="#"
+                            href="/sign-up"
                         >
                             Get Started
                         </a>
 
-                        <a
-                            className="block w-full rounded-sm px-12 py-3 text-sm font-medium text-primary border-2 border-primary shadow-sm hover:text-white hover:bg-primary font-semibold focus:ring-3 focus:outline-hidden sm:w-auto"
-                            href="#"
-                        >
-                            Learn More
-                        </a>
+                        
                     </div>
                 </div>
             </div>
-            <Image src="/dashboard.png" alt="dashboard" width={1000} height={500} className='mt-5 rounded-lg' />
+            <Image src="/dashboard.png" alt="dashboard" width={1000} height={500} className='mt-5 rounded-lg mb-7' />
         </section>
     )
 }

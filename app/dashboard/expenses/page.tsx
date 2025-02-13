@@ -38,7 +38,6 @@ function ExpensesScreen() {
         .innerJoin(Tags, eq(Expenses.tagId, Tags.id))
         .innerJoin(Budgets, eq(Tags.budgetId, Budgets.id))
         .where(and(eq(Expenses.createdBy, userEmail)))
-        .groupBy(Expenses.date)
         .orderBy(asc(Expenses.date));
 
       return expenses;

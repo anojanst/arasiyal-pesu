@@ -22,8 +22,8 @@ function ExpenseItem(props: { expense: Expense, refreshData: () => void }) {
         <div className='flex justify-between p-3 px-5 bg-slate-100 rounded-xl my-1'>
             <div className='w-[40%] flex justify-start'>{expense.name}</div>
             <div className='w-[20%] flex justify-end font-semibold'>${expense.amount}.00</div>
-            <div className='w-[20%] flex justify-end'>{expense.date}</div>
-            <div className='w-[15%] flex justify-end'><Badge variant="default" className='bg-primary font-light'>{expense.tagName}</Badge></div>
+            <div className='w-[20%] flex justify-center'>{expense.date}</div>
+            <div className='w-[15%] flex justify-center'><Badge variant="default" className='bg-primary font-light'>{expense.tagName}</Badge></div>
             <div className='w-[5%] flex justify-end'>
                 <Button size="icon" className='h-6 w-6 bg-red-700 hover:bg-red-900' onClick={() => deleteExpense(expense.id)}>
                     <Trash size={10} />

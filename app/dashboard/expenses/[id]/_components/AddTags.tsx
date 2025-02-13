@@ -21,8 +21,8 @@ function AddTags(props: { refreshData: () => void, budgetId: number }) {
 
         if (result) {
             refreshData()
-            toast(`Tag has been created. Tag Id is: ${result[0].insertedId!} `)
             setName('')
+            toast(`Tag has been created. Tag Id is: ${result[0].insertedId!} `)
         }
     }
 
@@ -33,7 +33,7 @@ function AddTags(props: { refreshData: () => void, budgetId: number }) {
             </div>
             <div className='p-2 border rounded-lg mt-1 h-[133px] flex flex-col justify-between'>
                     <div>
-                        <Input placeholder='Tag Name - Eg: Groceries' className='h-8' onChange={(e) => setName(e.target.value)} />
+                        <Input value={name} placeholder='Tag Name - Eg: Groceries' className='h-8' onChange={(e) => setName(e.target.value)} />
                     </div>
                     <div className='mt-2'>
                         <Button

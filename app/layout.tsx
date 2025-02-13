@@ -5,7 +5,14 @@ import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { Outfit } from 'next/font/google'
  
-// If loading a variable font, you don't need to specify the font weight
+export const metadata = {
+  title: "BudgeX | Budget Tracker",
+  description: "Track Smart, Spend Wise, Save More!",
+  icons: {
+      icon: "/favicon.png",
+  },
+};
+
 const outfit = Outfit({
   subsets: ['latin'],
 })

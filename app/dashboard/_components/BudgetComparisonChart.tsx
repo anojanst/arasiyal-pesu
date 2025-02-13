@@ -36,14 +36,14 @@ const BudgetComparisonChart = () => {
 
     return (
             <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={budgetData}>
+                <BarChart data={budgetData} margin={{ top: 20, right: 10, left: 0, bottom: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="amount" fill="#8884d8" barSize={30} name="Budget Amount" />
-                    <Bar dataKey="totalAmountSpent" fill="#82ca9d" barSize={30} name="Spent Amount" />
+                    <Bar dataKey="amount" fill="#8884d8" barSize={20} name="Budget Amount" />
+                    <Bar dataKey="totalAmountSpent" fill="#82ca9d" barSize={20} name="Spent Amount" />
                 </BarChart>
             </ResponsiveContainer>
     );
