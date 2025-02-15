@@ -2,11 +2,13 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { db } from '@/utils/dbConfig';
-import { Incomes } from '@/utils/schema';
+import { Incomes, incomeCategoryEnum } from '@/utils/schema';
 import { useUser } from '@clerk/nextjs';
 import { toast } from 'sonner';
 import { format } from "date-fns";
+import { recalcBalanceHistoryFromDate } from "@/utils/recalcBalanceHistoryFromDate";
 
 function AddIncome(props: { refreshData: () => void }) {
     const { refreshData } = props;
@@ -14,21 +16,25 @@ function AddIncome(props: { refreshData: () => void }) {
     const [name, setName] = useState('');
     const [amount, setAmount] = useState(0);
     const [date, setDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
+    const [category, setCategory] = useState<string>("Salary"); // Default category
 
     const saveIncome = async () => {
         const result = await db.insert(Incomes).values({
             name: name,
             amount: amount,
             createdBy: user?.primaryEmailAddress?.emailAddress!,
-            date: date
+            date: date,
+            category: category as typeof incomeCategoryEnum.enumValues[number]
         }).returning({ insertedId: Incomes.id });
 
         if (result) {
+            recalcBalanceHistoryFromDate(user?.primaryEmailAddress?.emailAddress!, date, amount, "income", "add");
             refreshData();
-            toast(`Income has been added. Income Id is: ${result[0].insertedId!}`);
+            toast(`Income has been added.`);
             setName('');
             setAmount(0);
             setDate(format(new Date(), 'yyyy-MM-dd'));
+            setCategory("Salary");
         }
     };
 
@@ -49,9 +55,24 @@ function AddIncome(props: { refreshData: () => void }) {
                         <h1 className='text-sm font-semibold'>Date</h1>
                         <Input placeholder='date' value={date} type='date' className='h-8' onChange={(e) => setDate(e.target.value)} />
                     </div>
+                    <div className='col-span-1'>
+                        <h1 className='text-sm font-semibold'>Category</h1>
+                        <Select value={category} onValueChange={setCategory}>
+                            <SelectTrigger className="h-8">
+                                <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {incomeCategoryEnum.enumValues.map((cat) => (
+                                    <SelectItem key={cat} value={cat}>
+                                        {cat}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <div className='mt-1 col-span-1'>
                         <Button
-                            disabled={!(name && amount && date)}
+                            disabled={!(name && amount && date && category)}
                             onClick={saveIncome}
                             className='w-full h-8'>Save Income</Button>
                     </div>

@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 import { Tag } from '@/app/dashboard/_type/type';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState } from 'react';
+import { recalcBalanceHistoryFromDate } from '@/utils/recalcBalanceHistoryFromDate';
 
 function AddExpenses(props: { refreshData: () => void, tags: Tag[] }) {
     const { refreshData, tags } = props
@@ -34,6 +35,7 @@ function AddExpenses(props: { refreshData: () => void, tags: Tag[] }) {
         }).returning({ insertedId: Expenses.id })
 
         if (result) {
+            recalcBalanceHistoryFromDate(user?.primaryEmailAddress?.emailAddress!, date, amount, "expense", "add");
             refreshData()
             toast(`Expense has been created. Budget Id is: ${result[0].insertedId!} `)
             setAmount(0)

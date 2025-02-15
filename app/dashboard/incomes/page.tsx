@@ -9,7 +9,7 @@ import { Incomes } from '@/utils/schema';
 import { Income } from '../_type/type';
 import IncomeItem from './_components/IncomeItem';
 import { Skeleton } from '@/components/ui/skeleton';
-import IncomeSummaryChart from './_components/IncomeSummaryChart';
+import IncomeExpenseBalanceChart from './_components/IncomeExpenseBalanceChart';
 
 function IncomeScreen() {
     const { user } = useUser();
@@ -23,7 +23,8 @@ function IncomeScreen() {
                     name: Incomes.name,
                     amount: Incomes.amount,
                     createdBy: Incomes.createdBy,
-                    date: Incomes.date
+                    date: Incomes.date,
+                    category: Incomes.category,
                 })
                 .from(Incomes)
                 .where(and(eq(Incomes.createdBy, userEmail)))
@@ -49,13 +50,14 @@ function IncomeScreen() {
             <div className='grid grid-cols-1 md:grid-cols-3 gap-5 mt-4'>
                 <div className='col-span-1'>
                     <AddIncome refreshData={() => fetchIncomes(user?.primaryEmailAddress?.emailAddress!)} />
-                        <IncomeSummaryChart />
+                    {incomes.length > 0 && <IncomeExpenseBalanceChart count={incomes.length} />}
                 </div>
                 <div className='col-span-1 md:col-span-2 border rounded-lg p-3'>
                     <h2 className='font-semibold'>Latest Income</h2>
                     <div className='flex justify-between p-3 px-5 bg-slate-300 rounded-xl my-1'>
-                        <div className='w-[50%] flex justify-start font-semibold'>Source Name</div>
+                        <div className='w-[35%] flex justify-start font-semibold'>Source Name</div>
                         <div className='w-[15%] flex justify-end font-semibold'>Amount</div>
+                        <div className='w-[15%] flex justify-end font-semibold'>Category</div>
                         <div className='w-[15%] flex justify-end font-semibold'>Date</div>
                         <div className='w-[10%] flex justify-end font-semibold'>
                             Delete

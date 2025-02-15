@@ -32,5 +32,6 @@ export interface Income {
     name: string,
     amount: number,
     createdBy: string,
-    date: string
+    date: string,
+    category: string
 }
