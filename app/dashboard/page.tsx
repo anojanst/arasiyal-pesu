@@ -2,12 +2,12 @@
 import { useUser } from '@clerk/nextjs'
 import React, { useEffect, useState } from 'react'
 import BudgetSummary from './_components/BudgetSummary'
-import SummaryChart from './_components/SummaryChart'
 import BudgetPieChart from './_components/BudgetPieChart'
 import BudgetComparisonChart from './_components/BudgetComparisonChart'
 import { db } from '@/utils/dbConfig'
 import { Budgets, Tags, Expenses } from '@/utils/schema'
 import { eq, sql } from 'drizzle-orm'
+import IncomeExpenseBalanceChart from './_components/IncomeExpenseBalanceChart'
 
 function Dashboard() {
   const { user } = useUser()
@@ -63,7 +63,7 @@ function Dashboard() {
       {total_expense_count > 0 && (
       <div className='grid grid-cols-1 md:grid-cols-7 gap-5 mt-5'>
         <div className='col-span-3 border rounded-lg p-2 flex gap-2 items-center justify-between'>
-          <SummaryChart />
+          <IncomeExpenseBalanceChart count={total_expense_count}/>
         </div>
         <div className='col-span-2 border rounded-lg p-2 py-5'>
           <BudgetPieChart />

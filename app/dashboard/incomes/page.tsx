@@ -9,7 +9,7 @@ import { Incomes } from '@/utils/schema';
 import { Income } from '../_type/type';
 import IncomeItem from './_components/IncomeItem';
 import { Skeleton } from '@/components/ui/skeleton';
-import IncomeExpenseBalanceChart from './_components/IncomeExpenseBalanceChart';
+import IncomeExpenseBalanceChart from '../_components/IncomeExpenseBalanceChart';
 
 function IncomeScreen() {
     const { user } = useUser();
