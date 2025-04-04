@@ -9,19 +9,19 @@ import { toast } from 'sonner'
 import { eq } from 'drizzle-orm'
 import { recalcBalanceHistoryFromDate } from '@/utils/recalcBalanceHistoryFromDate'
 import { useUser } from '@clerk/nextjs'
+import { deleteExpense } from '@/utils/expenseUtil'
 
 function ExpenseItem(props: { expense: Expense, refreshData: () => void }) {
     const { expense, refreshData } = props
     const { user } = useUser()
     
-    const deleteExpense = async (expenseId: number, date: string, amount: number) => {
-        const result = await db.delete(Expenses).where(eq(Expenses.id, expenseId)).returning()
-        if (result) {
-            recalcBalanceHistoryFromDate(user?.primaryEmailAddress?.emailAddress!, date, amount, "income", "add");
-            refreshData()
-            toast(`Expense has been deleted.`)
-        }
+    const triggerDelete = async (expenseId: number, date: string, amount: number) => {
+        const result = await deleteExpense(expenseId, date, amount, user?.primaryEmailAddress?.emailAddress!)
+        
+        refreshData()
+        toast(`Expense has been deleted.`)
     }
+    
     return (
         <div className='flex justify-between p-3 px-5 bg-slate-100 rounded-xl my-1'>
             <div className='w-[40%] flex justify-start'>{expense.name}</div>
@@ -29,7 +29,7 @@ function ExpenseItem(props: { expense: Expense, refreshData: () => void }) {
             <div className='w-[20%] flex justify-center'>{expense.date}</div>
             <div className='w-[15%] flex justify-center'><Badge variant="default" className='bg-primary font-light'>{expense.tagName}</Badge></div>
             <div className='w-[5%] flex justify-end'>
-                <Button size="icon" className='h-6 w-6 bg-red-700 hover:bg-red-900' onClick={() => deleteExpense(expense.id, expense.date, expense.amount)}>
+                <Button size="icon" className='h-6 w-6 bg-red-700 hover:bg-red-900' onClick={() => triggerDelete(expense.id, expense.date, expense.amount)}>
                     <Trash size={10} />
                 </Button>
             </div>

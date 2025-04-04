@@ -23,7 +23,7 @@ export const createBalanceHistory = async (
     await db
       .insert(BalanceHistory)
       .values({
-        userEmail: createdBy,
+        createdBy: createdBy,
         date: date,
         totalIncome: totalIncome,
         totalExpense: totalExpense,
@@ -50,7 +50,7 @@ export const updateBalanceHistory = async (
         totalExpense: totalExpense,
         balance: balance,
       })
-      .where(and(eq(BalanceHistory.userEmail, createdBy), eq(BalanceHistory.date, date)))
+      .where(and(eq(BalanceHistory.createdBy, createdBy), eq(BalanceHistory.date, date)))
       .returning({ updatedId: BalanceHistory.id })
   } catch (error) { 
     console.error("Error updating balance history:", error);
@@ -72,7 +72,7 @@ export const updateBalanceOnly = async (
       .set({
         balance: balance,
       })
-      .where(and(eq(BalanceHistory.userEmail, createdBy), eq(BalanceHistory.date, date)))
+      .where(and(eq(BalanceHistory.createdBy, createdBy), eq(BalanceHistory.date, date)))
       .returning({ updatedId: BalanceHistory.id })
 
   } catch (error) { 
@@ -136,7 +136,7 @@ export const getPreviousDateBalance = async (
     const result = await db
       .select({ balance: BalanceHistory.balance, date: BalanceHistory.date })
       .from(BalanceHistory)
-      .where(and(eq(BalanceHistory.userEmail, createdBy), lt(BalanceHistory.date, date)))
+      .where(and(eq(BalanceHistory.createdBy, createdBy), lt(BalanceHistory.date, date)))
       .orderBy(desc(BalanceHistory.date)) // Get the most recent past date
       .limit(1);
       
@@ -155,7 +155,7 @@ export const getConsecutiveBalanceHistory = async (
     const result = await db
       .select({ id: BalanceHistory.id, date: BalanceHistory.date, balance: BalanceHistory.balance, totalIncome: BalanceHistory.totalIncome, totalExpense: BalanceHistory.totalExpense })
       .from(BalanceHistory)
-      .where(and(eq(BalanceHistory.userEmail, createdBy), gte(BalanceHistory.date, date)))
+      .where(and(eq(BalanceHistory.createdBy, createdBy), gte(BalanceHistory.date, date)))
       .orderBy(asc(BalanceHistory.date))
 
     return result
@@ -173,7 +173,7 @@ export const getBalanceByDate = async (
     const result = await db
       .select({ id: BalanceHistory.id, balance: BalanceHistory.balance, totalIncome: BalanceHistory.totalIncome, totalExpense: BalanceHistory.totalExpense })
       .from(BalanceHistory)
-      .where(and(eq(BalanceHistory.userEmail, createdBy), eq(BalanceHistory.date, date)))
+      .where(and(eq(BalanceHistory.createdBy, createdBy), eq(BalanceHistory.date, date)))
       .orderBy(desc(BalanceHistory.date)) // Get the most recent past date
       .limit(1);
 

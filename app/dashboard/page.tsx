@@ -5,9 +5,10 @@ import BudgetSummary from './_components/BudgetSummary'
 import BudgetPieChart from './_components/BudgetPieChart'
 import BudgetComparisonChart from './_components/BudgetComparisonChart'
 import { db } from '@/utils/dbConfig'
-import { Budgets, Tags, Expenses } from '@/utils/schema'
-import { eq, sql } from 'drizzle-orm'
+import { Budgets, Tags, Expenses, LoanRepayments } from '@/utils/schema'
+import { eq, sql, gte, lte, and } from 'drizzle-orm'
 import IncomeExpenseBalanceChart from './_components/IncomeExpenseBalanceChart'
+import { format, startOfMonth } from 'date-fns'
 
 function Dashboard() {
   const { user } = useUser()
@@ -15,39 +16,75 @@ function Dashboard() {
     const [total_budget_amount, setTotalBudgetAmount] = useState<number>(0)
     const [total_expense_count, setTotalExpenseCount] = useState<number>(0)
 
-    const getAllBudgetSummaryByUser = async (userEmail: string) => {
-        try {
-            const totalBudget = await db
-                .select({
-                    totalBudgetAmount: sql<number>`COALESCE(SUM(${Budgets.amount}), 0)`.as("total_budget_amount"),
-                })
-                .from(Budgets)
-                .where(eq(Budgets.createdBy, userEmail));
+    const getSummaryByUser = async (userEmail: string) => {
+      try {
+        const today = new Date();
+        const startDate = startOfMonth(today);
     
-            const totals = await db
-                .select({
-                    totalAmountSpent: sql<number>`COALESCE(SUM(${Expenses.amount}), 0)`.as("total_amount_spent"),
-                    totalExpenseCount: sql<number>`COUNT(${Expenses.id})`.as("total_expense_count"),
-                })
-                .from(Budgets)
-                .leftJoin(Tags, eq(Tags.budgetId, Budgets.id))
-                .leftJoin(Expenses, eq(Expenses.tagId, Tags.id))
-                .where(eq(Budgets.createdBy, userEmail));
-                
-            setTotalBudgetAmount(totalBudget[0].totalBudgetAmount);
-            setTotalAmountSpent(totals[0].totalAmountSpent);
-            setTotalExpenseCount(totals[0].totalExpenseCount);
+        const formattedToday = format(today, "yyyy-MM-dd");
+        const formattedStartDate = format(startDate, "yyyy-MM-dd");
     
-            return { ...totalBudget[0], ...totals[0] };
-        } catch (error) {
-            console.error("Error fetching budgets:", error);
-            throw new Error("Failed to fetch budgets");
-        }
+        // ✅ Step 1: Get total budget amount from Budgets table
+        const totalBudget = await db
+          .select({
+            totalBudgetAmount: sql<number>`COALESCE(SUM(${Budgets.amount}), 0)`.as("total_budget_amount"),
+          })
+          .from(Budgets)
+          .where(eq(Budgets.createdBy, userEmail));
+    
+        // ✅ Step 2: Get loan repayments scheduled for this month
+        const totalLoanRepayments = await db
+          .select({
+            totalLoanRepayments: sql<number>`COALESCE(SUM(${LoanRepayments.amount}), 0)`.as("total_loan_repayments"),
+          })
+          .from(LoanRepayments)
+          .where(
+            and(
+              eq(LoanRepayments.createdBy, userEmail),
+              eq(LoanRepayments.status, "pending"), // Only count pending repayments
+              gte(LoanRepayments.scheduledDate, formattedStartDate),
+              lte(LoanRepayments.scheduledDate, formattedToday)
+            )
+          );
+    
+        // ✅ Step 3: Get total expenses for the current month
+        const totals = await db
+          .select({
+            totalAmountSpent: sql<number>`COALESCE(SUM(${Expenses.amount}), 0)`.as("total_amount_spent"),
+            totalExpenseCount: sql<number>`COUNT(${Expenses.id})`.as("total_expense_count"),
+          })
+          .from(Expenses)
+          .where(
+            and(
+              eq(Expenses.createdBy, userEmail),
+              gte(Expenses.date, formattedStartDate),
+              lte(Expenses.date, formattedToday)
+            )
+          );
+    
+        // ✅ Step 4: Update state with calculated values
+        const finalTotalBudget = Number(totalBudget[0].totalBudgetAmount) + Number(totalLoanRepayments[0].totalLoanRepayments);
+    
+        setTotalBudgetAmount(finalTotalBudget);
+        setTotalAmountSpent(totals[0].totalAmountSpent);
+        setTotalExpenseCount(totals[0].totalExpenseCount);
+    
+        return { 
+          totalBudgetAmount: finalTotalBudget,
+          totalLoanRepayments: totalLoanRepayments[0].totalLoanRepayments,
+          totalAmountSpent: totals[0].totalAmountSpent,
+          totalExpenseCount: totals[0].totalExpenseCount
+        };
+      } catch (error) {
+        console.error("Error fetching budgets:", error);
+        throw new Error("Failed to fetch budgets");
+      }
     };
+    
     
 
     const fetchTotals = async () => {
-        const totals = await getAllBudgetSummaryByUser(user?.primaryEmailAddress?.emailAddress!)
+        const totals = await getSummaryByUser(user?.primaryEmailAddress?.emailAddress!)
         console.log(totals)
     }
 

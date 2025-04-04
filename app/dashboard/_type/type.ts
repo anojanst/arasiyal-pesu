@@ -35,3 +35,30 @@ export interface Income {
     date: string,
     category: string
 }
+
+export interface Loan {
+    id: number;
+    createdBy: string;
+    lender: string;
+    principalAmount: number;
+    interestRate: string;
+    tenureMonths: number;
+    repaymentFrequency: string;
+    EMI: number;
+    remainingPrincipal: number;
+    nextDueDate: string;
+    isPaidOff: boolean;
+  }
+  
+
+  export interface LoanRepayment {
+    id: number;
+    loanId: number | null;
+    createdBy: string;
+    scheduledDate: string; // Format: YYYY-MM-DD
+    amount: number;
+    principalAmount: number;
+    interestAmount: number;
+    status: string;
+  }
+  

@@ -35,7 +35,7 @@ const IncomeExpenseBalanceChart = ({ count }: { count: number }) => {
             .from(BalanceHistory)
             .where(
                 and(
-                    eq(BalanceHistory.userEmail, userEmail),
+                    eq(BalanceHistory.createdBy, userEmail),
                     gte(BalanceHistory.date, formattedStartDate),
                     lte(BalanceHistory.date, formattedToday)
                 )
